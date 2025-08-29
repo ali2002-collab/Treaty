@@ -70,7 +70,7 @@ export function Navbar() {
             <ThemeToggle />
             <Link href="/signin">
               <Button size="sm" className="px-6 py-2 h-9 bg-foreground text-background hover:bg-foreground/90 shadow-sm hover:shadow-md transition-all duration-200">
-                Get Started
+                Sign in
               </Button>
             </Link>
             
