@@ -8,6 +8,7 @@ import { notFound } from "next/navigation"
 import { RunAnalysisClient } from "@/components/results/run-analysis-client"
 import { ScoreDonut } from "@/components/results/score-donut"
 import { AnalysisTabs } from "@/components/results/analysis-tabs"
+import { AIChatButton } from "@/components/results/ai-chat-button"
 import { type Analysis, zDetectedType } from "@/lib/analysis-schema"
 
 interface ResultsPageProps {
@@ -52,6 +53,9 @@ interface AnalysisData {
 
 export default async function ResultsPage({ params }: ResultsPageProps) {
   const { id } = await params
+  if (!id) {
+    notFound()
+  }
   const supabase = await createClient()
   
   // Get contract data
@@ -215,8 +219,12 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
                           {analysisData?.favorable ? "Favorable" : "Needs Review"}
                         </Badge>
                         <Badge variant="outline">
-                          {transformedAnalysis.detected_type}
+                          {contractData.detected_type || 'Detecting...'}
                         </Badge>
+                        <AIChatButton 
+                          contractId={id as string}
+                          contractType={contractData.detected_type || 'Contract'}
+                        />
                       </div>
                     </div>
                   </div>

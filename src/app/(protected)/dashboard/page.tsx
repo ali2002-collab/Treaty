@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Container } from "@/components/ui/container"
-import { FileText, TrendingUp, AlertTriangle, RefreshCw } from "lucide-react"
+import { FileText, TrendingUp, AlertTriangle } from "lucide-react"
 import { KPICard } from "@/components/dashboard/kpi-card"
 import { ContractsTable, type Contract } from "@/components/dashboard/contracts-table"
 import { NewContractDialog } from "@/components/dashboard/new-contract-dialog"
@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button"
 export default function DashboardPage() {
   const [contracts, setContracts] = useState<Contract[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [refreshKey, setRefreshKey] = useState(0)
-  const [isRefreshing, setIsRefreshing] = useState(false)
+
 
   const fetchContracts = useCallback(async () => {
     try {
@@ -38,14 +37,7 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [refreshKey])
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true)
-    setRefreshKey(prev => prev + 1)
-    await fetchContracts()
-    setIsRefreshing(false)
-  }
+  }, [])
 
   useEffect(() => {
     fetchContracts()
@@ -53,7 +45,7 @@ export default function DashboardPage() {
 
   const handleContractAdded = () => {
     // Refresh the contracts list after a new contract is added
-    setRefreshKey(prev => prev + 1)
+    fetchContracts()
   }
 
   const handleContractDeleted = (id: string) => {
@@ -105,16 +97,6 @@ export default function DashboardPage() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="flex items-center gap-2"
-                >
-                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  {isRefreshing ? 'Refreshing...' : 'Refresh'}
-                </Button>
                 <NewContractDialog onContractAdded={handleContractAdded} />
               </div>
             </div>

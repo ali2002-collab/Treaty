@@ -95,8 +95,8 @@ DETAILED ANALYSIS REQUIREMENTS:
 - summary: Provide a comprehensive 3-4 sentence analysis covering key terms, risks, and overall assessment
 - recommendations: Provide specific, actionable advice (3-4 sentences) based on the analysis
 - clauses: Extract actual values from the contract text. If a clause is not mentioned, use "Not specified" instead of null
-- risks: Identify specific risks with exact contract excerpts and detailed analysis
-- opportunities: Identify positive aspects and negotiation leverage points
+- risks: Identify specific risks with exact contract excerpts and detailed analysis. IMPORTANT: severity must be exactly "high", "medium", or "low" (lowercase only)
+- opportunities: Identify positive aspects and negotiation leverage points. IMPORTANT: severity must be exactly "high", "medium", or "low" (lowercase only)
 - negotiation_points: List specific terms that could be negotiated or improved
 
 SCORING RULES:
@@ -111,6 +111,11 @@ CONTRACT TEXT:
 <<<TEXT START>>>
 ${extraction.text.substring(0, 8000)}${extraction.text.length > 8000 ? '...' : ''}
 <<<TEXT END>>>
+
+CRITICAL FORMAT REQUIREMENTS:
+- All severity values in risks and opportunities MUST be exactly "high", "medium", or "low" (lowercase only)
+- Do not use capital letters for severity values
+- Ensure all JSON fields match the exact schema format
 
 Return only valid JSON matching the schema or the error format above.`
 
@@ -133,6 +138,23 @@ Return only valid JSON matching the schema or the error format above.`
     // Check if AI detected an invalid contract
     if (analysisData.error) {
       throw new Error(analysisData.error)
+    }
+
+    // Fix common format issues before validation
+    if (analysisData.risks && Array.isArray(analysisData.risks)) {
+      analysisData.risks.forEach((risk: any) => {
+        if (risk.severity) {
+          risk.severity = risk.severity.toLowerCase()
+        }
+      })
+    }
+    
+    if (analysisData.opportunities && Array.isArray(analysisData.opportunities)) {
+      analysisData.opportunities.forEach((opportunity: any) => {
+        if (opportunity.severity) {
+          opportunity.severity = opportunity.severity.toLowerCase()
+        }
+      })
     }
 
     // Validate with Zod schema
@@ -174,13 +196,11 @@ Return only valid JSON matching the schema or the error format above.`
       throw new Error('Failed to save analysis to database')
     }
 
-    // Update contract with detected type and score
+    // Update contract with detected type
     await supabase
       .from('contracts')
       .update({ 
-        detected_type: detectedType,
-        score: validatedData.score,
-        updated_at: new Date().toISOString()
+        detected_type: detectedType
       })
       .eq('id', contractId)
 

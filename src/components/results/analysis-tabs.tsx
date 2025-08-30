@@ -71,14 +71,14 @@ export function AnalysisTabs({ analysis }: AnalysisTabsProps) {
             <div>
               <h4 className="font-medium mb-3">Negotiation Points</h4>
               {analysis.negotiation_points.length > 0 ? (
-                <ul className="space-y-2">
-                  {analysis.negotiation_points.map((point, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span className="text-sm text-muted-foreground">{point}</span>
-                    </li>
-                  ))}
-                </ul>
+              <ul className="space-y-2">
+                {analysis.negotiation_points.map((point, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span className="text-sm text-muted-foreground">{point}</span>
+                  </li>
+                ))}
+              </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">No specific negotiation points identified.</p>
               )}
@@ -97,26 +97,26 @@ export function AnalysisTabs({ analysis }: AnalysisTabsProps) {
           </CardHeader>
           <CardContent>
             {analysis.risks.length > 0 ? (
-              <div className="space-y-4">
-                {analysis.risks.map((risk, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-red-900 dark:text-red-100">{risk.type}</h4>
-                      <SeverityBadge level={risk.severity} />
+            <div className="space-y-4">
+              {analysis.risks.map((risk, index) => (
+                <div key={index} className="p-4 border rounded-lg bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-red-900 dark:text-red-100">{risk.type}</h4>
+                    <SeverityBadge level={risk.severity} />
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm font-medium text-red-800 dark:text-red-200">Excerpt:</span>
+                      <p className="text-sm text-red-700 dark:text-red-300 mt-1">{risk.excerpt}</p>
                     </div>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-sm font-medium text-red-800 dark:text-red-200">Excerpt:</span>
-                        <p className="text-sm text-red-700 dark:text-red-300 mt-1">{risk.excerpt}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-red-800 dark:text-red-200">Analysis:</span>
-                        <p className="text-sm text-red-700 dark:text-red-300 mt-1">{risk.note}</p>
-                      </div>
+                    <div>
+                      <span className="text-sm font-medium text-red-800 dark:text-red-200">Analysis:</span>
+                      <p className="text-sm text-red-700 dark:text-red-300 mt-1">{risk.note}</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No specific risks identified in this contract.</p>
@@ -136,26 +136,26 @@ export function AnalysisTabs({ analysis }: AnalysisTabsProps) {
           </CardHeader>
           <CardContent>
             {analysis.opportunities.length > 0 ? (
-              <div className="space-y-4">
-                {analysis.opportunities.map((opportunity, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-green-900 dark:text-green-100">{opportunity.type}</h4>
-                      <SeverityBadge level={opportunity.severity} />
+            <div className="space-y-4">
+              {analysis.opportunities.map((opportunity, index) => (
+                <div key={index} className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-green-900 dark:text-green-100">{opportunity.type}</h4>
+                    <SeverityBadge level={opportunity.severity} />
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm font-medium text-green-800 dark:text-green-200">Excerpt:</span>
+                      <p className="text-sm text-green-700 dark:text-green-300 mt-1">{opportunity.excerpt}</p>
                     </div>
-                    <div className="space-y-2">
-                      <div>
-                        <span className="text-sm font-medium text-green-800 dark:text-green-200">Excerpt:</span>
-                        <p className="text-sm text-green-700 dark:text-green-300 mt-1">{opportunity.excerpt}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-green-800 dark:text-green-200">Analysis:</span>
-                        <p className="text-sm text-green-700 dark:text-green-300 mt-1">{opportunity.note}</p>
-                      </div>
+                    <div>
+                      <span className="text-sm font-medium text-green-800 dark:text-green-200">Analysis:</span>
+                      <p className="text-sm text-green-700 dark:text-green-300 mt-1">{opportunity.note}</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No specific opportunities identified in this contract.</p>
