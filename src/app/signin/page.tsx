@@ -106,6 +106,11 @@ export default function SignInPage() {
         const { error, data: signUpData } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
+          options: {
+            emailRedirectTo: process.env.NEXT_PUBLIC_APP_URL 
+              ? process.env.NEXT_PUBLIC_APP_URL + '/auth/callback'
+              : undefined
+          }
         })
         
         if (error) {
