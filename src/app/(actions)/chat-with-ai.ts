@@ -65,8 +65,8 @@ ANALYSIS RESULTS:
 - Overall Score: ${analysis.score}/100
 - Favorable: ${analysis.favorable ? 'Yes' : 'No'}
 - Summary: ${analysis.summary}
-- Key Risks: ${analysis.risks?.map((r: any) => `${r.type} (${r.severity})`).join(', ') || 'None identified'}
-- Key Opportunities: ${analysis.opportunities?.map((o: any) => `${o.type} (${o.severity})`).join(', ') || 'None identified'}
+- Key Risks: ${analysis.risks?.map((r: { type: string; severity: string }) => `${r.type} (${r.severity})`).join(', ') || 'None identified'}
+- Key Opportunities: ${analysis.opportunities?.map((o: { type: string; note: string }) => `${o.type}: ${o.note}`).join(', ') || 'None identified'}
 - Negotiation Points: ${analysis.negotiation_points?.join(', ') || 'None identified'}
 ` : ''}
 

@@ -135,7 +135,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
 
   // Transform analysis data to match the Analysis type
   const transformedAnalysis: Analysis | null = analysisData ? {
-    detected_type: analysisData.detected_type as any, // Cast to enum type
+    detected_type: analysisData.detected_type, // Use original type
     clauses: analysisData.clauses,
     risks: analysisData.risks,
     opportunities: analysisData.opportunities,

@@ -73,13 +73,13 @@ export function AnalysisTabs({ analysis }: AnalysisTabsProps) {
               <h4 className="font-semibold text-base sm:text-lg text-foreground">Negotiation Points</h4>
               {analysis.negotiation_points.length > 0 ? (
                 <ul className="space-y-3 pl-0">
-                  {analysis.negotiation_points.map((point, index) => (
+                {analysis.negotiation_points.map((point, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="text-primary text-lg font-bold mt-0.5 flex-shrink-0 w-4 text-center">•</span>
                       <span className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1 pt-0.5">{point}</span>
-                    </li>
-                  ))}
-                </ul>
+                  </li>
+                ))}
+              </ul>
               ) : (
                 <p className="text-sm sm:text-base text-muted-foreground text-left">No specific negotiation points identified.</p>
               )}

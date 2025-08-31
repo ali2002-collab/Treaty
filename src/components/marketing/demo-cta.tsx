@@ -48,8 +48,8 @@ export function DemoCTA() {
               {steps.map((step, index) => (
                 <div key={step.title} className="text-center flex flex-col items-center">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center mx-auto mb-3 flex-shrink-0">
-                    <step.icon className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500" />
-                  </div>
+                      <step.icon className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500" />
+                    </div>
                   <div className="flex-1 flex flex-col justify-center min-h-[60px] sm:min-h-[70px]">
                     <h3 className="font-semibold mb-2 text-sm sm:text-base">{step.title}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{step.description}</p>
@@ -67,7 +67,7 @@ export function DemoCTA() {
               <Link href="/signin" className="w-full sm:w-auto">
                 <Button size="lg" className="text-base px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto">
                   Try Treaty Now
-                </Button>
+              </Button>
               </Link>
             </div>
           </CardContent>
