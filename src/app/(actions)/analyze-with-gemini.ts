@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase-server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { analysisJsonSchema, zAnalysis, type Analysis } from '@/lib/analysis-schema'
+import { analysisJsonSchema, zAnalysis } from '@/lib/analysis-schema'
 
 export async function analyzeWithGemini(contractId: string) {
   try {
@@ -97,122 +97,107 @@ CONFIDENTIALITY & IP:
 - Trade Secret Agreement: proprietary information protection, confidentiality obligations
 
 SERVICE & CONSULTING:
-- MSA (Master Service Agreement): service terms, scope of work, deliverables, payment terms
-- Statement of Work: specific project details, deliverables, timelines, requirements
-- Professional Services: professional expertise, service delivery, quality standards
+- MSA: master service agreement, general terms, service framework
+- SOW: statement of work, specific deliverables, project scope
+- Consulting Agreement: professional services, expert advice, deliverables
+- Service Agreement: service provision, terms, conditions, deliverables
+
+BUSINESS & COMMERCIAL:
+- Partnership Agreement: business partnership, profit sharing, responsibilities
+- Joint Venture: collaborative business arrangement, shared resources
+- Vendor Agreement: supplier terms, product delivery, payment terms
+- Distribution Agreement: product distribution, territory, exclusivity
+
+FINANCIAL & INVESTMENT:
+- Loan Agreement: lending terms, interest rates, repayment schedule
+- Investment Agreement: investment terms, equity, returns
+- Revenue Share: profit sharing, revenue distribution, percentages
+- Royalty Agreement: licensing fees, royalty rates, payment terms
+
+REAL ESTATE & PROPERTY:
+- Lease Agreement: property rental, terms, conditions, duration
+- Purchase Agreement: property sale, terms, closing conditions
+- Property Management: property oversight, maintenance, tenant relations
+- Construction Contract: building work, timelines, specifications
 
 TECHNOLOGY & SOFTWARE:
-- SaaS: software licensing, subscription terms, service levels, usage rights
-- Software License: software usage rights, restrictions, licensing terms
-- API Agreement: application programming interface usage, rate limits, data access
-- Cloud Services: cloud hosting, infrastructure, service availability
-- Data Processing Agreement: data handling, privacy, GDPR compliance
-
-REAL ESTATE:
-- Lease Agreement: property rental, terms, conditions, responsibilities
-- Purchase Agreement: property sale, terms, conditions, closing
-- Real Estate Contract: property transactions, development, management
-- Property Management: facility management, maintenance, operations
-
-FINANCIAL & BANKING:
-- Loan Agreement: lending terms, interest rates, repayment schedules
-- Credit Agreement: credit terms, limits, conditions
-- Investment Agreement: investment terms, returns, risk allocation
-- Financial Services: banking, payment processing, financial products
-
-MANUFACTURING & SUPPLY:
-- Supply Agreement: vendor relationships, supply terms, quality standards
-- Manufacturing Contract: production terms, specifications, quality control
-- Distribution Agreement: distribution channels, territories, marketing
-- Procurement Contract: purchasing terms, vendor selection, pricing
+- SaaS Agreement: software as a service, subscription terms
+- Software License: software usage rights, restrictions, terms
+- API Agreement: application programming interface, usage terms
+- Data Processing: data handling, privacy, security terms
 
 HEALTHCARE & MEDICAL:
-- Medical Services: healthcare delivery, patient care, medical procedures
-- Clinical Trial Agreement: research protocols, patient safety, data collection
-- Medical Device Contract: equipment supply, maintenance, compliance
+- Medical Services: healthcare provision, patient care, terms
+- Research Agreement: medical research, clinical trials, protocols
+- Healthcare Partnership: medical collaboration, shared resources
+- Telemedicine: remote healthcare, digital consultation terms
 
 EDUCATION & TRAINING:
-- Training Agreement: educational services, curriculum, learning outcomes
-- Research Agreement: academic research, funding, publication rights
-- Academic Contract: educational institution agreements, faculty terms
+- Training Agreement: educational services, course delivery, terms
+- Research Collaboration: academic research, shared resources
+- Student Agreement: educational terms, responsibilities, policies
+- Internship: work experience, learning objectives, terms
 
-ENTERTAINMENT & MEDIA:
-- Content License: content usage rights, licensing terms, royalties
-- Media Production: film, video, audio production agreements
-- Performance Agreement: live performances, venues, compensation
+GOVERNMENT & PUBLIC:
+- Government Contract: public service, compliance, regulations
+- Grant Agreement: funding terms, project requirements, reporting
+- Public Partnership: government collaboration, shared objectives
+- Regulatory Compliance: legal compliance, standards, requirements
 
-TRANSPORTATION & LOGISTICS:
-- Transportation Agreement: shipping, delivery, logistics services
-- Fleet Management: vehicle management, maintenance, operations
-
-ENERGY & UTILITIES:
-- Energy Contract: power supply, energy services, utility agreements
-- Renewable Energy: solar, wind, sustainable energy projects
-
-INSURANCE & RISK:
-- Insurance Policy: coverage terms, premiums, claims process
-- Risk Management: risk assessment, mitigation strategies
-
-LEGAL & COMPLIANCE:
-- Legal Services: attorney representation, legal advice
-- Government Contract: regulatory compliance, government requirements
-
-PARTNERSHIP & JOINT VENTURE:
-- Partnership Agreement: business partnerships, profit sharing, decision making
-- Strategic Alliance: business collaborations, shared objectives
+OTHER SPECIALIZED:
+- Franchise Agreement: business franchise, brand usage, terms
+- Licensing Agreement: intellectual property licensing, usage rights
+- Settlement Agreement: legal dispute resolution, terms
+- Confidentiality Agreement: information protection, non-disclosure
+- Other: any other contract type not listed above
 
 DETAILED ANALYSIS REQUIREMENTS:
-- detected_type: Must be accurately determined from content analysis
-- summary: Provide a comprehensive 3-4 sentence analysis covering key terms, risks, and overall assessment
-- recommendations: Provide specific, actionable advice (3-4 sentences) based on the analysis
-- clauses: Extract actual values from the contract text. If a clause is not mentioned, use "Not specified" instead of null
-- risks: Identify specific risks with exact contract excerpts and detailed analysis. IMPORTANT: severity must be exactly "high", "medium", or "low" (lowercase only)
-- opportunities: Identify opportunities. Look for:
-  * Favorable payment terms (good rates, flexible schedules, early payment discounts)
-  * Strong liability protections (high caps, good exclusions, favorable indemnity)
-  * Good termination terms (reasonable notice periods, fair cause requirements)
-  * Strong confidentiality protections (broad scope, long duration, good carve-outs)
-  * Favorable IP terms (ownership retention, broad licensing rights, derivative rights)
-  * Good dispute resolution (preferred jurisdiction, arbitration options, mediation)
-  * Renewal benefits (automatic renewal, favorable renewal terms, good conditions)
-  * Service level guarantees (performance commitments, quality standards, uptime guarantees)
-  * Volume discounts or tiered pricing benefits
-  * Any other contract terms that benefit the client/party
+- detected_type: Must be exactly one of the contract types listed above
+- score: Risk score from 0-100 (0 = extremely risky, 100 = very favorable)
+- summary: 2-3 sentence summary of the contract's key points and overall assessment
+- recommendations: 2-3 actionable recommendations for the client
+- clauses: Array of key contract clauses with brief descriptions
+- risks: Array of identified risks with severity (high/medium/low) and analysis
+- opportunities: Array of identified opportunities with analysis
+- negotiation_points: Array of specific negotiation points with actionable advice
+
+RISK ANALYSIS GUIDANCE:
+The AI MUST identify risks in EVERY contract. Risks are negative aspects that could harm the client or create liability. Examples:
+- Unfavorable payment terms (late fees, penalties, high rates)
+- Weak liability protections (low caps, broad exclusions)
+- Unreasonable termination clauses (short notice, high penalties)
+- Unfavorable dispute resolution (mandatory arbitration, venue restrictions)
+- Weak intellectual property protections
+- Unreasonable confidentiality obligations
+- Unfavorable renewal terms
+- Any other contract terms that disadvantage the client
 
 OPPORTUNITIES ANALYSIS GUIDANCE:
 The AI MUST identify opportunities in EVERY contract. Opportunities are positive aspects that benefit the client or provide leverage. Examples:
-- Payment terms that are favorable (good rates, discounts, flexible schedules)
-- Liability protections that are strong (high caps, good exclusions)
-- Termination terms that are reasonable (fair notice periods, good cause requirements)
-- Service guarantees that protect the client (performance commitments, quality standards)
-- IP rights that are favorable (ownership retention, broad licensing)
-- Renewal terms that are beneficial (automatic renewal, good conditions)
-- Any other terms that provide value or protection to the client
+- Favorable payment terms (good rates, flexible schedules, early payment discounts)
+- Strong liability protections (high caps, good exclusions, favorable indemnity)
+- Flexible termination options (reasonable notice, low penalties)
+- Favorable dispute resolution (choice of venue, mediation options)
+- Strong intellectual property protections
+- Reasonable confidentiality obligations
+- Favorable renewal terms
+- Any other contract terms that benefit the client
 
 If no obvious opportunities exist, identify potential areas where the contract could be improved to create opportunities.
-
-SCORING RULES:
-- Start at 70 points
-- Subtract 10 points for each HIGH risk identified
-- Subtract 5 points for each MEDIUM risk identified  
-- Subtract 2 points for each LOW risk identified
-- Add 5 points for favorable terms or opportunities
-- Clamp final score between 0-100
-
-CONTRACT TEXT:
-<<<TEXT START>>>
-${extraction.text.substring(0, 8000)}${extraction.text.length > 8000 ? '...' : ''}
-<<<TEXT END>>>
 
 CRITICAL FORMAT REQUIREMENTS:
 - All severity values in risks MUST be exactly "high", "medium", or "low" (lowercase only)
 - Opportunities do NOT need severity values
-- Do not use capital letters for severity values
-- Ensure all JSON fields match the exact schema format
+- All text must be professional and legally appropriate
+- JSON must be valid and parseable
+- No HTML tags or special characters in text fields
 
-Return only valid JSON matching the schema or the error format above.`
+CONTRACT TEXT TO ANALYZE:
+${extraction.text}
 
-    // Generate content with Gemini
+Analyze this contract and return the JSON response.`
+
+    // Generate content with the prompt
     const result = await model.generateContent(prompt)
     const response = await result.response
     const text = response.text()
@@ -220,7 +205,7 @@ Return only valid JSON matching the schema or the error format above.`
     console.log('Gemini response:', text)
 
     // Parse JSON response
-    let analysisData: any
+    let analysisData
     try {
       analysisData = JSON.parse(text)
     } catch (parseError) {
@@ -235,7 +220,7 @@ Return only valid JSON matching the schema or the error format above.`
 
     // Fix common format issues before validation
     if (analysisData.risks && Array.isArray(analysisData.risks)) {
-      analysisData.risks.forEach((risk: any) => {
+      analysisData.risks.forEach((risk: { severity?: string }) => {
         if (risk.severity) {
           risk.severity = risk.severity.toLowerCase()
         }
@@ -276,20 +261,20 @@ Return only valid JSON matching the schema or the error format above.`
       .select('id')
       .single()
 
-    if (insertError || !analysis) {
+    if (insertError) {
       console.error('Database insert error:', insertError)
       throw new Error('Failed to save analysis to database')
     }
 
-    // Update contract with detected type
-    await supabase
-      .from('contracts')
-      .update({ 
-        detected_type: detectedType
-      })
-      .eq('id', contractId)
+    // Update contract with detected type if not already set
+    if (!contract.detected_type && detectedType !== 'Other') {
+      await supabase
+        .from('contracts')
+        .update({ detected_type: detectedType })
+        .eq('id', contractId)
+    }
 
-    return { 
+    return {
       success: true, 
       analysisId: analysis.id,
       score: validatedData.score,
@@ -297,11 +282,19 @@ Return only valid JSON matching the schema or the error format above.`
       detected_type: detectedType
     }
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Gemini analysis error:', error)
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    
+    if (error instanceof Error) {
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+    
+    return {
+      success: false,
+      error: 'Unknown error occurred'
     }
   }
 } 
