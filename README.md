@@ -13,10 +13,7 @@
 - [Authentication](#authentication)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-<<<<<<< HEAD
-- [License](#license)
 =======
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
 
 ## 🚀 Overview
 
@@ -125,12 +122,8 @@ Treaty is a modern, AI-powered contract analysis platform that helps legal profe
    GOOGLE_AI_API_KEY=your_gemini_api_key
    
    # App Configuration
-<<<<<<< HEAD
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-=======
    NEXT_PUBLIC_APP_URL=url
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
-   ```
+
 
 4. **Database Setup**
    - Create a new Supabase project
@@ -145,11 +138,8 @@ Treaty is a modern, AI-powered contract analysis platform that helps legal profe
    ```
 
 6. **Open your browser**
-<<<<<<< HEAD
-   Navigate to [http://localhost:3000](http://localhost:3000)
-=======
    Navigate to url
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
+
 
 ## 📁 Project Structure
 
@@ -274,21 +264,10 @@ We welcome contributions! Please follow these steps:
 - Update documentation as needed
 - Follow the existing code style
 
-<<<<<<< HEAD
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-=======
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
 
 ## 📞 Support & Contact
 
 - **Email**: [syedmuhammadalihassan2002@hotmail.com](mailto:syedmuhammadalihassan2002@hotmail.com)
-<<<<<<< HEAD
-- **Documentation**: [docs.treaty.ai](https://docs.treaty.ai)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/treaty/issues)
-=======
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
 
 ## 🙏 Acknowledgments
 
@@ -299,11 +278,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Open Source Community** for inspiration and tools
 
 ---
-
-<<<<<<< HEAD
-**Made with ❤️ by the Treaty Team**
-=======
 **Made with ❤️ by Syed Muhammad Ali Hassan **
->>>>>>> 8a2c9133a5bb2a92834455b4923e3078fb633b09
 
-*Transform your contract analysis workflow with AI-powered insights.*
