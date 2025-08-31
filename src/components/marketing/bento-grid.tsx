@@ -17,7 +17,7 @@ const features = [
   {
     icon: Upload,
     title: "Upload & Parse",
-    description: "Support for PDF and DOCX files with intelligent document parsing across 50+ contract types",
+            description: "Support for DOCX files with intelligent document parsing across 50+ contract types",
     gradient: "from-blue-500/20 to-cyan-500/20",
     borderGradient: "from-blue-500/50 to-cyan-500/50"
   },

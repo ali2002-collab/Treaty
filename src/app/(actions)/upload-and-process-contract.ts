@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase-server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-// PDF parsing temporarily disabled - will implement later
 import * as mammoth from 'mammoth'
 import { randomUUID } from 'crypto'
 
@@ -26,10 +25,10 @@ export async function uploadAndProcessContract(formData: FormData) {
     }
 
     // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error('Only PDF and DOCX files are supported')
-    }
+      const allowedTypes = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Only DOCX files are supported. PDF support has been removed.')
+  }
 
     // Validate file size (10MB limit)
     const maxSize = 10 * 1024 * 1024 // 10MB
@@ -71,7 +70,7 @@ export async function uploadAndProcessContract(formData: FormData) {
 
     // Generate unique ID and file path
     const contractId = randomUUID()
-    const fileExtension = file.type === 'application/pdf' ? 'pdf' : 'docx'
+    const fileExtension = 'docx'
     const storagePath = `contracts/${userId}/${contractId}.${fileExtension}`
 
     // Create service role client for admin operations
@@ -148,19 +147,8 @@ export async function uploadAndProcessContract(formData: FormData) {
     let extractedText = ''
     let pages = 1
 
-    if (file.type === 'application/pdf') {
-      try {
-        console.log('PDF file detected - storing without parsing for now')
-        // TODO: Implement PDF parsing later
-        extractedText = '[PDF content will be parsed later]'
-        pages = 1
-      } catch (parseError) {
-        console.error('PDF handling error:', parseError)
-        // For now, continue with placeholder text
-        extractedText = '[PDF content will be parsed later]'
-        pages = 1
-      }
-    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    // Only allow DOCX files - PDF support has been removed
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       try {
         console.log('Parsing DOCX file...')
         const docxBuffer = Buffer.from(await fileData.arrayBuffer())
@@ -173,6 +161,8 @@ export async function uploadAndProcessContract(formData: FormData) {
         console.error('DOCX parsing error:', parseError)
         throw new Error('Failed to parse DOCX file. The file may be corrupted.')
       }
+    } else {
+      throw new Error('Only DOCX files are supported. PDF support has been removed. Please convert your file to DOCX format.')
     }
 
     // Validate extracted text

@@ -10,7 +10,7 @@ import {
 const faqs = [
   {
     question: "What file formats does Treaty support?",
-    answer: "Treaty currently supports PDF and DOCX files. We're working on adding support for more formats including Google Docs and plain text files."
+    answer: "Treaty currently supports DOCX files. We're working on adding support for more formats including Google Docs and plain text files."
   },
   {
     question: "How accurate is the AI analysis?",

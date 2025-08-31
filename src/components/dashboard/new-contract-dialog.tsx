@@ -29,9 +29,9 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
     const file = event.target.files?.[0]
     if (file) {
       // Validate file type
-      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      const allowedTypes = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       if (!allowedTypes.includes(file.type)) {
-        toast.error('Only PDF and DOCX files are supported')
+        toast.error('Only DOCX files are supported. PDF support has been removed.')
         return
       }
       
@@ -51,9 +51,9 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
     const file = event.dataTransfer.files[0]
     if (file) {
       // Validate file type
-      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      const allowedTypes = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       if (!allowedTypes.includes(file.type)) {
-        toast.error('Only PDF and DOCX files are supported')
+        toast.error('Only DOCX files are supported. PDF support has been removed.')
         return
       }
       
@@ -361,7 +361,7 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
                         <Upload className="h-8 w-8 text-muted-foreground" />
                         <div className="text-center">
                           <p className="text-sm font-medium">Click to upload or drag and drop</p>
-                          <p className="text-xs text-muted-foreground">PDF, DOCX up to 10MB</p>
+                          <p className="text-xs text-muted-foreground">DOCX files only, up to 10MB</p>
                         </div>
                       </div>
                     ) : (
@@ -385,7 +385,7 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
                 <Input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf,.docx"
+                  accept=".docx"
                   onChange={handleFileSelect}
                   className="hidden"
                 />

@@ -46,10 +46,16 @@ function AuthCallbackContent() {
         setStatus('success')
         setMessage('Email verified successfully! You can now sign in to your account.')
         
-        // Redirect to signin after a short delay
+        // Redirect to signin after a short delay with verification success parameter
         setTimeout(() => {
-          router.push('/signin')
-        }, 3000)
+          try {
+            router.push('/signin?verified=true')
+          } catch (redirectError) {
+            // Fallback: use window.location if router fails
+            console.warn('Router redirect failed, using fallback:', redirectError)
+            window.location.href = '/signin?verified=true'
+          }
+        }, 2000)
         
       } catch (error) {
         console.error('Unexpected error:', error)
@@ -113,11 +119,14 @@ function AuthCallbackContent() {
             {status === 'success' && (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Redirecting you to sign in...
+                  Redirecting you to sign in automatically in 2 seconds...
                 </p>
-                <Button asChild>
-                  <Link href="/signin">Sign In Now</Link>
+                <Button asChild className="w-full">
+                  <Link href="/signin?verified=true">Sign In Now (Don't Wait)</Link>
                 </Button>
+                <p className="text-xs text-muted-foreground">
+                  Or wait for automatic redirect...
+                </p>
               </div>
             )}
             {status === 'error' && (

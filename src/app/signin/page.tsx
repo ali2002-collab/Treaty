@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Mail } from "lucide-react"
+import { ArrowLeft, Mail, CheckCircle } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -27,19 +27,30 @@ const signInSchema = z.object({
 
 type SignInForm = z.infer<typeof signInSchema>
 
-export default function SignInPage() {
+function SignInContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isEmailSent, setIsEmailSent] = useState(false)
+  const [showVerificationSuccess, setShowVerificationSuccess] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState<{
     score: number
     label: string
     color: string
   }>({ score: 0, label: "Very Weak", color: "text-red-500" })
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  // Check if user just verified their email
+  useEffect(() => {
+    const verified = searchParams.get('verified')
+    if (verified === 'true') {
+      setShowVerificationSuccess(true)
+      setSuccess('Your email has been verified successfully! You can now sign in to your account.')
+    }
+  }, [searchParams])
 
   const calculatePasswordStrength = (password: string) => {
     // Don't show strength indicator if password is empty
@@ -229,6 +240,10 @@ export default function SignInPage() {
     )
   }
 
+
+
+
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Container className="max-w-md">
@@ -271,6 +286,13 @@ export default function SignInPage() {
                           placeholder="Enter your email"
                           aria-label="Email address"
                           disabled={isLoading}
+                          onChange={(e) => {
+                            field.onChange(e.target.value)
+                            if (showVerificationSuccess) {
+                              setSuccess(null)
+                              setShowVerificationSuccess(false)
+                            }
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -295,6 +317,10 @@ export default function SignInPage() {
                           onChange={(e) => {
                             field.onChange(e.target.value)
                             calculatePasswordStrength(e.target.value)
+                            if (showVerificationSuccess) {
+                              setSuccess(null)
+                              setShowVerificationSuccess(false)
+                            }
                           }}
                         />
                       </FormControl>
@@ -384,6 +410,7 @@ export default function SignInPage() {
                   setIsSignUp(!isSignUp)
                   setError(null)
                   setSuccess(null)
+                  setShowVerificationSuccess(false)
                 }}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 disabled={isLoading}
@@ -399,4 +426,33 @@ export default function SignInPage() {
       </Container>
     </div>
   )
-} 
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Container className="max-w-md">
+          <div className="mb-8">
+            <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to home
+            </Link>
+          </div>
+          
+          <Card>
+            <CardHeader className="text-center">
+              <div className="mb-4">
+                <span className="text-2xl font-bold text-foreground">Treaty</span>
+              </div>
+              <CardTitle className="text-2xl">Loading...</CardTitle>
+              <CardDescription>Please wait...</CardDescription>
+            </CardHeader>
+          </Card>
+        </Container>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
+  )
+}

@@ -26,7 +26,7 @@ GOOGLE_API_KEY=your_google_ai_studio_api_key
 
 ## How It Works
 
-1. **Contract Upload**: Users upload PDF/DOCX contracts
+1. **Contract Upload**: Users upload DOCX contracts
 2. **Text Extraction**: Contract text is extracted and stored
 3. **AI Analysis**: Click "Analyze with AI" to trigger Gemini analysis
 4. **Results Storage**: Analysis results are saved to the `analyses` table
