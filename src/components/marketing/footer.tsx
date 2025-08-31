@@ -16,19 +16,19 @@ export function Footer() {
           {/* Right side - Links */}
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
             <Link
-              href="#"
+              href="/privacy"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Privacy
             </Link>
             <Link
-              href="#"
+              href="/terms"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Terms
             </Link>
             <Link
-              href="#"
+              href="/contact"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Contact

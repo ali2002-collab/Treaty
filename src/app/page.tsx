@@ -2,7 +2,6 @@ import { Navbar } from "@/components/marketing/navbar"
 import { Hero } from "@/components/marketing/hero"
 import { BentoGrid } from "@/components/marketing/bento-grid"
 import { SocialProof } from "@/components/marketing/social-proof"
-import { Pricing } from "@/components/marketing/pricing"
 import { DemoCTA } from "@/components/marketing/demo-cta"
 import { FAQ } from "@/components/marketing/faq"
 import { Footer } from "@/components/marketing/footer"
@@ -15,7 +14,6 @@ export default function Home() {
         <Hero />
         <BentoGrid />
         <SocialProof />
-        <Pricing />
         <DemoCTA />
         <FAQ />
       </main>

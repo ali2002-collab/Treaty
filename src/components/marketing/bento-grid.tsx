@@ -17,42 +17,42 @@ const features = [
   {
     icon: Upload,
     title: "Upload & Parse",
-    description: "Support for PDF and DOCX files with intelligent document parsing",
+    description: "Support for PDF and DOCX files with intelligent document parsing across 50+ contract types",
     gradient: "from-blue-500/20 to-cyan-500/20",
     borderGradient: "from-blue-500/50 to-cyan-500/50"
   },
   {
     icon: FileText,
-    title: "Clause Extraction",
-    description: "Automatically identify Payment, IP, Termination, and Liability clauses",
+    title: "Multi-Industry Support",
+    description: "From employment to real estate, healthcare to technology, finance to manufacturing",
     gradient: "from-violet-500/20 to-purple-500/20",
     borderGradient: "from-violet-500/50 to-purple-500/50"
   },
   {
     icon: Shield,
-    title: "Risk Scoring",
-    description: "Get High/Medium/Low risk assessments with detailed explanations",
+    title: "Advanced Risk Scoring",
+    description: "Get High/Medium/Low risk assessments with detailed explanations and industry-specific insights",
     gradient: "from-orange-500/20 to-red-500/20",
     borderGradient: "from-orange-500/50 to-red-500/50"
   },
   {
     icon: MessageSquare,
-    title: "Negotiation Points",
-    description: "Actionable suggestions to improve contract terms and conditions",
+    title: "Smart Negotiation",
+    description: "Industry-specific negotiation points and actionable suggestions to improve contract terms",
     gradient: "from-green-500/20 to-emerald-500/20",
     borderGradient: "from-green-500/50 to-emerald-500/50"
   },
   {
     icon: MessageCircle,
-    title: "Ask-AI Chat",
-    description: "Get instant answers to questions about your specific contract",
+    title: "AI-Powered Chat",
+    description: "Get instant answers to questions about your specific contract with contextual understanding",
     gradient: "from-indigo-500/20 to-blue-500/20",
     borderGradient: "from-indigo-500/50 to-blue-500/50"
   },
   {
     icon: Trash2,
     title: "Privacy-First",
-    description: "Delete your data anytime with full control over your information",
+    description: "Delete your data anytime with full control over your information and enterprise-grade security",
     gradient: "from-gray-500/20 to-slate-500/20",
     borderGradient: "from-gray-500/50 to-slate-500/50"
   }

@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
+import type { Metadata } from "next"
+import { Geist, Geist_Mono } from "next/font/google"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "sonner"
+import { AuthProvider } from "@/components/auth/auth-context"
+import { AuthErrorBoundary } from "@/components/auth/auth-error-boundary"
+
+import "./globals.css"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,17 +18,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Treaty — AI Contract Analyzer",
-  description: "Turn complex contracts into clear decisions. Upload an agreement and get instant plain-English insights, risk flags, and negotiation tips.",
+  title: {
+    default: "Treaty - Contract Analysis Platform",
+    template: "%s | Treaty",
+  },
+  description: "AI-powered contract analysis and risk assessment platform",
+  keywords: ["contracts", "legal", "AI", "analysis", "risk assessment"],
+  authors: [{ name: "Treaty Team" }],
+  creator: "Treaty",
   openGraph: {
-    title: "Treaty — AI Contract Analyzer",
-    description: "Turn complex contracts into clear decisions. Upload an agreement and get instant plain-English insights, risk flags, and negotiation tips.",
     type: "website",
+    locale: "en_US",
+    url: "https://treaty.app",
+    title: "Treaty - Contract Analysis Platform",
+    description: "AI-powered contract analysis and risk assessment platform",
+    siteName: "Treaty",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Treaty — AI Contract Analyzer",
-    description: "Turn complex contracts into clear decisions. Upload an agreement and get instant plain-English insights, risk flags, and negotiation tips.",
+    title: "Treaty - Contract Analysis Platform",
+    description: "AI-powered contract analysis and risk assessment platform",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -45,8 +68,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <AuthErrorBoundary>
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </AuthErrorBoundary>
         </ThemeProvider>
       </body>
     </html>

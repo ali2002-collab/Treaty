@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Container } from "@/components/ui/container"
 import { SignOutButton } from "@/components/auth/signout-button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export const metadata: Metadata = {
   title: "Dashboard — Treaty",
@@ -21,7 +22,10 @@ export default function ProtectedLayout({
             <div className="flex items-center">
               <span className="text-xl font-bold text-foreground">Treaty</span>
             </div>
-            <SignOutButton />
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <SignOutButton />
+            </div>
           </div>
         </Container>
       </header>

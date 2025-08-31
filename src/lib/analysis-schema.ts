@@ -1,7 +1,57 @@
 import { z } from "zod";
 import { Schema, SchemaType } from '@google/generative-ai';
 
-export const zDetectedType = z.enum(["Employment","NDA","MSA","SaaS","Other"]);
+// Comprehensive contract type detection
+export const zDetectedType = z.enum([
+  // Employment & HR
+  "Employment", "Independent Contractor", "Consulting Agreement", "Non-Compete Agreement",
+  
+  // Confidentiality & IP
+  "NDA", "Confidentiality Agreement", "IP Assignment", "Trade Secret Agreement",
+  
+  // Service & Consulting
+  "MSA", "Statement of Work", "Consulting Agreement", "Professional Services",
+  
+  // Technology & Software
+  "SaaS", "Software License", "API Agreement", "Cloud Services", "Data Processing Agreement",
+  
+  // Real Estate
+  "Lease Agreement", "Purchase Agreement", "Real Estate Contract", "Property Management",
+  
+  // Financial & Banking
+  "Loan Agreement", "Credit Agreement", "Investment Agreement", "Financial Services",
+  
+  // Manufacturing & Supply
+  "Supply Agreement", "Manufacturing Contract", "Distribution Agreement", "Procurement Contract",
+  
+  // Healthcare & Medical
+  "Medical Services", "Healthcare Agreement", "Clinical Trial Agreement", "Medical Device Contract",
+  
+  // Education & Training
+  "Training Agreement", "Educational Services", "Research Agreement", "Academic Contract",
+  
+  // Entertainment & Media
+  "Content License", "Media Production", "Performance Agreement", "Publishing Contract",
+  
+  // Transportation & Logistics
+  "Transportation Agreement", "Logistics Contract", "Shipping Agreement", "Fleet Management",
+  
+  // Energy & Utilities
+  "Energy Contract", "Utility Agreement", "Renewable Energy", "Power Purchase Agreement",
+  
+  // Insurance & Risk
+  "Insurance Policy", "Reinsurance Agreement", "Risk Management", "Claims Agreement",
+  
+  // Legal & Compliance
+  "Legal Services", "Compliance Agreement", "Regulatory Contract", "Government Contract",
+  
+  // Partnership & Joint Venture
+  "Partnership Agreement", "Joint Venture", "Collaboration Agreement", "Strategic Alliance",
+  
+  // Other
+  "Other"
+]);
+
 export const zSeverity = z.enum(["high","medium","low"]);
 export const zRisk = z.object({
   type: z.string(),
@@ -9,6 +59,13 @@ export const zRisk = z.object({
   excerpt: z.string(),
   note: z.string()
 });
+
+export const zOpportunity = z.object({
+  type: z.string(),
+  excerpt: z.string(),
+  note: z.string()
+});
+
 export const zAnalysis = z.object({
   detected_type: zDetectedType.nullable().optional(), // Allow null/undefined
   clauses: z.object({
@@ -21,7 +78,7 @@ export const zAnalysis = z.object({
     renewal: z.object({ term_length: z.string().nullable().optional(), renewal_window: z.string().nullable().optional(), conditions: z.string().nullable().optional() })
   }),
   risks: z.array(zRisk),
-  opportunities: z.array(zRisk),
+  opportunities: z.array(zOpportunity),
   score: z.number().min(0).max(100),
   summary: z.string().nullable().optional(), // Allow null/undefined
   recommendations: z.string().nullable().optional(), // Allow null/undefined
@@ -35,7 +92,7 @@ export const analysisJsonSchema: Schema = {
   properties: {
     detected_type: { 
       type: SchemaType.STRING, 
-      description: "Contract type: Employment, NDA, MSA, SaaS, or Other. If unsure, use 'Other'." 
+      description: "Contract type from the comprehensive list. Analyze content carefully to determine the most accurate type. If unsure, use 'Other'." 
     },
     clauses: {
       type: SchemaType.OBJECT,
@@ -119,11 +176,10 @@ export const analysisJsonSchema: Schema = {
         type: SchemaType.OBJECT, 
         properties: {
           type: { type: SchemaType.STRING, description: "Opportunity type" }, 
-          severity: { type: SchemaType.STRING, description: "Opportunity level: high, medium, or low" }, 
           excerpt: { type: SchemaType.STRING, description: "Relevant contract excerpt" }, 
           note: { type: SchemaType.STRING, description: "Opportunity analysis note" }
         }, 
-        required: ["type","severity","excerpt","note"] 
+        required: ["type","excerpt","note"] 
       } 
     },
     score: { 
@@ -131,18 +187,15 @@ export const analysisJsonSchema: Schema = {
       description: "Contract risk score from 0 to 100 (higher is better)" 
     },
     summary: { 
-      type: SchemaType.STRING, 
-      description: "Brief summary of the contract analysis. If unsure, provide a basic description." 
+      type: SchemaType.STRING, description: "Brief summary of the contract analysis. If unsure, provide a basic description." 
     },
     recommendations: { 
-      type: SchemaType.STRING, 
-      description: "Actionable recommendations based on analysis. If unsure, provide general advice." 
+      type: SchemaType.STRING, description: "Actionable recommendations based on analysis. If unsure, provide general advice." 
     },
     negotiation_points: { 
       type: SchemaType.ARRAY, 
       items: { 
-        type: SchemaType.STRING, 
-        description: "Key points for negotiation" 
+        type: SchemaType.STRING, description: "Key points for negotiation" 
       } 
     }
   },

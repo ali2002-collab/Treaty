@@ -111,18 +111,169 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
 
   const detectContractType = (filename: string): string => {
     const lowerFilename = filename.toLowerCase()
-    if (lowerFilename.includes('employment') || lowerFilename.includes('employee') || lowerFilename.includes('hire')) {
+    
+    // Employment & HR
+    if (lowerFilename.includes('employment') || lowerFilename.includes('employee') || lowerFilename.includes('hire') || lowerFilename.includes('job')) {
       return 'Employment'
     }
+    if (lowerFilename.includes('contractor') || lowerFilename.includes('freelance') || lowerFilename.includes('1099')) {
+      return 'Independent Contractor'
+    }
+    if (lowerFilename.includes('consulting') || lowerFilename.includes('consultant')) {
+      return 'Consulting Agreement'
+    }
+    if (lowerFilename.includes('non-compete') || lowerFilename.includes('noncompete') || lowerFilename.includes('restrictive covenant')) {
+      return 'Non-Compete Agreement'
+    }
+    
+    // Confidentiality & IP
     if (lowerFilename.includes('nda') || lowerFilename.includes('non-disclosure') || lowerFilename.includes('confidentiality')) {
       return 'NDA'
     }
+    if (lowerFilename.includes('ip assignment') || lowerFilename.includes('intellectual property') || lowerFilename.includes('patent')) {
+      return 'IP Assignment'
+    }
+    if (lowerFilename.includes('trade secret') || lowerFilename.includes('proprietary')) {
+      return 'Trade Secret Agreement'
+    }
+    
+    // Service & Consulting
     if (lowerFilename.includes('msa') || lowerFilename.includes('master service')) {
       return 'MSA'
     }
-    if (lowerFilename.includes('saas') || lowerFilename.includes('software')) {
+    if (lowerFilename.includes('sow') || lowerFilename.includes('statement of work') || lowerFilename.includes('scope of work')) {
+      return 'Statement of Work'
+    }
+    if (lowerFilename.includes('professional services') || lowerFilename.includes('service agreement')) {
+      return 'Professional Services'
+    }
+    
+    // Technology & Software
+    if (lowerFilename.includes('saas') || lowerFilename.includes('software as a service')) {
       return 'SaaS'
     }
+    if (lowerFilename.includes('software license') || lowerFilename.includes('software agreement')) {
+      return 'Software License'
+    }
+    if (lowerFilename.includes('api') || lowerFilename.includes('application programming interface')) {
+      return 'API Agreement'
+    }
+    if (lowerFilename.includes('cloud') || lowerFilename.includes('hosting')) {
+      return 'Cloud Services'
+    }
+    if (lowerFilename.includes('data processing') || lowerFilename.includes('dpa') || lowerFilename.includes('gdpr')) {
+      return 'Data Processing Agreement'
+    }
+    
+    // Real Estate
+    if (lowerFilename.includes('lease') || lowerFilename.includes('rental') || lowerFilename.includes('tenancy')) {
+      return 'Lease Agreement'
+    }
+    if (lowerFilename.includes('purchase') || lowerFilename.includes('sale') || lowerFilename.includes('buy')) {
+      return 'Purchase Agreement'
+    }
+    if (lowerFilename.includes('real estate') || lowerFilename.includes('property')) {
+      return 'Real Estate Contract'
+    }
+    if (lowerFilename.includes('property management') || lowerFilename.includes('facility management')) {
+      return 'Property Management'
+    }
+    
+    // Financial & Banking
+    if (lowerFilename.includes('loan') || lowerFilename.includes('credit') || lowerFilename.includes('mortgage')) {
+      return 'Loan Agreement'
+    }
+    if (lowerFilename.includes('investment') || lowerFilename.includes('securities') || lowerFilename.includes('fund')) {
+      return 'Investment Agreement'
+    }
+    if (lowerFilename.includes('financial services') || lowerFilename.includes('banking') || lowerFilename.includes('payment')) {
+      return 'Financial Services'
+    }
+    
+    // Manufacturing & Supply
+    if (lowerFilename.includes('supply') || lowerFilename.includes('vendor') || lowerFilename.includes('supplier')) {
+      return 'Supply Agreement'
+    }
+    if (lowerFilename.includes('manufacturing') || lowerFilename.includes('production') || lowerFilename.includes('assembly')) {
+      return 'Manufacturing Contract'
+    }
+    if (lowerFilename.includes('distribution') || lowerFilename.includes('wholesale') || lowerFilename.includes('retail')) {
+      return 'Distribution Agreement'
+    }
+    if (lowerFilename.includes('procurement') || lowerFilename.includes('purchase order') || lowerFilename.includes('po')) {
+      return 'Procurement Contract'
+    }
+    
+    // Healthcare & Medical
+    if (lowerFilename.includes('medical') || lowerFilename.includes('healthcare') || lowerFilename.includes('clinical')) {
+      return 'Medical Services'
+    }
+    if (lowerFilename.includes('clinical trial') || lowerFilename.includes('research study')) {
+      return 'Clinical Trial Agreement'
+    }
+    if (lowerFilename.includes('medical device') || lowerFilename.includes('equipment')) {
+      return 'Medical Device Contract'
+    }
+    
+    // Education & Training
+    if (lowerFilename.includes('training') || lowerFilename.includes('education') || lowerFilename.includes('learning')) {
+      return 'Training Agreement'
+    }
+    if (lowerFilename.includes('research') || lowerFilename.includes('academic') || lowerFilename.includes('university')) {
+      return 'Research Agreement'
+    }
+    
+    // Entertainment & Media
+    if (lowerFilename.includes('content') || lowerFilename.includes('media') || lowerFilename.includes('publishing')) {
+      return 'Content License'
+    }
+    if (lowerFilename.includes('production') || lowerFilename.includes('film') || lowerFilename.includes('video')) {
+      return 'Media Production'
+    }
+    if (lowerFilename.includes('performance') || lowerFilename.includes('concert') || lowerFilename.includes('show')) {
+      return 'Performance Agreement'
+    }
+    
+    // Transportation & Logistics
+    if (lowerFilename.includes('transportation') || lowerFilename.includes('shipping') || lowerFilename.includes('logistics')) {
+      return 'Transportation Agreement'
+    }
+    if (lowerFilename.includes('fleet') || lowerFilename.includes('vehicle') || lowerFilename.includes('car')) {
+      return 'Fleet Management'
+    }
+    
+    // Energy & Utilities
+    if (lowerFilename.includes('energy') || lowerFilename.includes('power') || lowerFilename.includes('utility')) {
+      return 'Energy Contract'
+    }
+    if (lowerFilename.includes('renewable') || lowerFilename.includes('solar') || lowerFilename.includes('wind')) {
+      return 'Renewable Energy'
+    }
+    
+    // Insurance & Risk
+    if (lowerFilename.includes('insurance') || lowerFilename.includes('policy') || lowerFilename.includes('coverage')) {
+      return 'Insurance Policy'
+    }
+    if (lowerFilename.includes('reinsurance') || lowerFilename.includes('risk management')) {
+      return 'Risk Management'
+    }
+    
+    // Legal & Compliance
+    if (lowerFilename.includes('legal services') || lowerFilename.includes('attorney') || lowerFilename.includes('lawyer')) {
+      return 'Legal Services'
+    }
+    if (lowerFilename.includes('compliance') || lowerFilename.includes('regulatory') || lowerFilename.includes('government')) {
+      return 'Government Contract'
+    }
+    
+    // Partnership & Joint Venture
+    if (lowerFilename.includes('partnership') || lowerFilename.includes('joint venture') || lowerFilename.includes('collaboration')) {
+      return 'Partnership Agreement'
+    }
+    if (lowerFilename.includes('strategic alliance') || lowerFilename.includes('alliance')) {
+      return 'Strategic Alliance'
+    }
+    
     return 'Other'
   }
 

@@ -146,10 +146,10 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   } : null
 
   return (
-    <div className="p-4">
+    <div className="p-2 sm:p-4">
       <Container>
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <Link href="/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to dashboard
@@ -157,14 +157,14 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
           </div>
           
           {/* Contract Header */}
-          <div className="mb-8">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{contractData.filename}</h1>
-                <div className="flex items-center gap-4 text-muted-foreground">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2 break-words">{contractData.filename}</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm sm:text-base text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4" />
-                    <span>{contractData.mime}</span>
+                    <span className="truncate">{contractData.mime}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
@@ -176,11 +176,11 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Badge variant="secondary">{contractData.detected_type || 'Detecting...'}</Badge>
-                <Badge variant="outline">{extractionData.pages} page{extractionData.pages !== 1 ? 's' : ''}</Badge>
+              <div className="flex flex-wrap gap-2 sm:gap-2">
+                <Badge variant="secondary" className="text-xs sm:text-sm">{contractData.detected_type || 'Detecting...'}</Badge>
+                <Badge variant="outline" className="text-xs sm:text-sm">{extractionData.pages} page{extractionData.pages !== 1 ? 's' : ''}</Badge>
                 {contractData.score && (
-                  <Badge variant={getScoreVariant(contractData.score)}>
+                  <Badge variant={getScoreVariant(contractData.score)} className="text-xs sm:text-sm">
                     Score: {contractData.score}/100
                   </Badge>
                 )}
@@ -190,11 +190,11 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
 
           {/* AI Analysis Section */}
           {transformedAnalysis ? (
-            <div className="space-y-6 mb-8">
+            <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-12">
               {/* Score Overview */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                     <TrendingUp className="h-5 w-5" />
                     Contract Analysis
                   </CardTitle>
@@ -203,22 +203,24 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-6">
-                    <ScoreDonut score={transformedAnalysis.score} />
+                  <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6">
+                    <div className="flex-shrink-0">
+                      <ScoreDonut score={transformedAnalysis.score} />
+                    </div>
                     
-                    <div className="flex-1 space-y-4">
+                    <div className="flex-1 space-y-4 min-w-0">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Analysis Summary</h3>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <h3 className="text-base sm:text-lg font-semibold mb-2">Analysis Summary</h3>
+                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                           {transformedAnalysis.summary}
                         </p>
                       </div>
                       
-                      <div className="flex items-center gap-4">
-                        <Badge variant={analysisData?.favorable ? "default" : "secondary"}>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                        <Badge variant={analysisData?.favorable ? "default" : "secondary"} className="text-xs sm:text-sm">
                           {analysisData?.favorable ? "Favorable" : "Needs Review"}
                         </Badge>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className="text-xs sm:text-sm">
                           {contractData.detected_type || 'Detecting...'}
                         </Badge>
                         <AIChatButton 
@@ -235,7 +237,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
               <AnalysisTabs analysis={transformedAnalysis} />
             </div>
           ) : (
-            <div className="mb-8">
+            <div className="mb-8 sm:mb-12">
               <RunAnalysisClient contractId={id} />
             </div>
           )}
@@ -243,7 +245,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
           {/* Extracted Text */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <FileText className="h-5 w-5" />
                 Contract Extraction
               </CardTitle>
@@ -252,8 +254,8 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted/50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm font-mono text-foreground">
+              <div className="bg-muted/50 rounded-lg p-3 sm:p-4 max-h-64 sm:max-h-96 overflow-y-auto">
+                <pre className="whitespace-pre-wrap text-xs sm:text-sm font-mono text-foreground">
                   {extractionData.text}
                 </pre>
               </div>

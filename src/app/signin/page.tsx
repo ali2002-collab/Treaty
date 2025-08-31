@@ -17,7 +17,12 @@ import { createClient } from "@/lib/supabase-browser"
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 })
 
 type SignInForm = z.infer<typeof signInSchema>
@@ -28,8 +33,53 @@ export default function SignInPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isEmailSent, setIsEmailSent] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState<{
+    score: number
+    label: string
+    color: string
+  }>({ score: 0, label: "Very Weak", color: "text-red-500" })
   const router = useRouter()
   const supabase = createClient()
+
+  const calculatePasswordStrength = (password: string) => {
+    // Don't show strength indicator if password is empty
+    if (!password || password.length === 0) {
+      setPasswordStrength({ score: 0, label: "", color: "text-muted-foreground" })
+      return
+    }
+
+    let score = 0
+    let label = "Very Weak"
+    let color = "text-red-500"
+
+    if (password.length >= 8) score += 1
+    if (/[A-Z]/.test(password)) score += 1
+    if (/[a-z]/.test(password)) score += 1
+    if (/[0-9]/.test(password)) score += 1
+    if (/[^A-Za-z0-9]/.test(password)) score += 1
+
+    if (score === 5) {
+      label = "Very Strong"
+      color = "text-green-500"
+    } else if (score === 4) {
+      label = "Strong"
+      color = "text-green-600"
+    } else if (score === 3) {
+      label = "Good"
+      color = "text-yellow-500"
+    } else if (score === 2) {
+      label = "Fair"
+      color = "text-orange-500"
+    } else if (score === 1) {
+      label = "Weak"
+      color = "text-red-600"
+    } else {
+      label = "Very Weak"
+      color = "text-red-500"
+    }
+
+    setPasswordStrength({ score, label, color })
+  }
 
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -43,6 +93,13 @@ export default function SignInPage() {
     setIsLoading(true)
     setError(null)
     setSuccess(null)
+
+    // Check password strength for signup
+    if (isSignUp && passwordStrength.score < 3) {
+      setError("Please create a stronger password. Your password should be at least 'Good' strength.")
+      setIsLoading(false)
+      return
+    }
 
     try {
       if (isSignUp) {
@@ -88,7 +145,7 @@ export default function SignInPage() {
         // Check if email confirmation is required
         if (signUpData.user && !signUpData.session) {
           setIsEmailSent(true)
-          setSuccess("Account created successfully! Please check your email to confirm your account before signing in.")
+          setSuccess("Account created successfully! Please check your email to verify your account before signing in.")
           form.reset()
         } else if (signUpData.session) {
           // If session exists (email confirmation not required), redirect to dashboard
@@ -117,6 +174,8 @@ export default function SignInPage() {
     setIsEmailSent(false)
     setSuccess(null)
     setError(null)
+    setIsSignUp(false) // Reset to signin mode
+    setPasswordStrength({ score: 0, label: "Very Weak", color: "text-red-500" })
     form.reset()
   }
 
@@ -140,29 +199,22 @@ export default function SignInPage() {
               </div>
               <CardTitle className="text-2xl">Check your email</CardTitle>
               <CardDescription>
-                We've sent you a confirmation link to verify your account.
+                We've sent you a verification link to activate your account.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center text-sm text-muted-foreground">
-                <p>Please check your email and click the confirmation link to activate your account.</p>
-                <p className="mt-2">Once confirmed, you can sign in with your email and password.</p>
+                <p>Please check your email and click the verification link to activate your account.</p>
+                <p className="mt-2">Once verified, you can sign in with your email and password.</p>
               </div>
               
-              <div className="space-y-3">
+              <div className="pt-4">
                 <Button 
                   onClick={resetForm}
                   className="w-full"
                   variant="outline"
                 >
                   Back to sign in
-                </Button>
-                
-                <Button 
-                  onClick={() => window.location.reload()}
-                  className="w-full"
-                >
-                  I've confirmed my email
                 </Button>
               </div>
             </CardContent>
@@ -205,7 +257,7 @@ export default function SignInPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <FormLabel htmlFor="email" className="mb-2 block">Email</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -226,7 +278,7 @@ export default function SignInPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor="password">Password</FormLabel>
+                      <FormLabel htmlFor="password" className="mb-2 block">Password</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -235,12 +287,67 @@ export default function SignInPage() {
                           placeholder="Enter your password"
                           aria-label="Password"
                           disabled={isLoading}
+                          onChange={(e) => {
+                            field.onChange(e.target.value)
+                            calculatePasswordStrength(e.target.value)
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {isSignUp && (
+                  <div className="space-y-2">
+                    {form.watch('password') && form.watch('password').length > 0 && (
+                      <>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">Password strength:</span>
+                          <span className={`font-medium ${passwordStrength.color}`}>
+                            {passwordStrength.label}
+                          </span>
+                        </div>
+                        <div className="flex space-x-1">
+                          {[1, 2, 3, 4, 5].map((level) => (
+                            <div
+                              key={level}
+                              className={`h-2 flex-1 rounded-full transition-colors ${
+                                level <= passwordStrength.score
+                                  ? passwordStrength.score >= 4
+                                    ? 'bg-green-500'
+                                    : passwordStrength.score >= 3
+                                    ? 'bg-yellow-500'
+                                    : 'bg-red-500'
+                                  : 'bg-gray-200 dark:bg-gray-700'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    <div className="text-xs text-muted-foreground">
+                      <p>Password must contain:</p>
+                      <ul className="mt-1 space-y-1">
+                        <li className={`${form.watch('password') && form.watch('password').length >= 8 ? 'text-green-600' : 'text-muted-foreground'}`}>
+                          • At least 8 characters
+                        </li>
+                        <li className={`${form.watch('password') && /[A-Z]/.test(form.watch('password')) ? 'text-green-600' : 'text-muted-foreground'}`}>
+                          • One uppercase letter
+                        </li>
+                        <li className={`${form.watch('password') && /[a-z]/.test(form.watch('password')) ? 'text-green-600' : 'text-muted-foreground'}`}>
+                          • One lowercase letter
+                        </li>
+                        <li className={`${form.watch('password') && /[0-9]/.test(form.watch('password')) ? 'text-green-600' : 'text-muted-foreground'}`}>
+                          • One number
+                        </li>
+                        <li className={`${form.watch('password') && /[^A-Za-z0-9]/.test(form.watch('password')) ? 'text-green-600' : 'text-muted-foreground'}`}>
+                          • One special character
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
 
                 {error && (
                   <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
