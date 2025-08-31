@@ -13,7 +13,6 @@
 - [Authentication](#authentication)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## 🚀 Overview
 
@@ -122,7 +121,7 @@ Treaty is a modern, AI-powered contract analysis platform that helps legal profe
    GOOGLE_AI_API_KEY=your_gemini_api_key
    
    # App Configuration
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   NEXT_PUBLIC_APP_URL=url
    ```
 
 4. **Database Setup**
@@ -138,7 +137,7 @@ Treaty is a modern, AI-powered contract analysis platform that helps legal profe
    ```
 
 6. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   Navigate to url
 
 ## 📁 Project Structure
 
@@ -263,15 +262,10 @@ We welcome contributions! Please follow these steps:
 - Update documentation as needed
 - Follow the existing code style
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📞 Support & Contact
 
 - **Email**: [syedmuhammadalihassan2002@hotmail.com](mailto:syedmuhammadalihassan2002@hotmail.com)
-- **Documentation**: [docs.treaty.ai](https://docs.treaty.ai)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/treaty/issues)
 
 ## 🙏 Acknowledgments
 
@@ -283,6 +277,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by the Treaty Team**
+**Made with ❤️ by Syed Muhammad Ali Hassan **
 
 *Transform your contract analysis workflow with AI-powered insights.*
