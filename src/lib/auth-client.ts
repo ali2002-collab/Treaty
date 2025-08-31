@@ -2,13 +2,14 @@
 
 import { createClient } from './supabase-browser'
 import { isRefreshTokenError, clearAuthData, getAuthErrorMessage } from './auth-utils'
+import { logger } from './logger'
 
 export async function signOutClient() {
   try {
     const supabase = createClient()
     await supabase.auth.signOut()
   } catch (error) {
-    console.error('Error signing out:', error)
+    logger.error('Error signing out:', error)
   } finally {
     // Always clear local auth data and redirect
     clearAuthData()
@@ -22,7 +23,7 @@ export async function refreshSession() {
     const { data: { session }, error } = await supabase.auth.getSession()
     
     if (error) {
-      console.error('Error refreshing session:', error)
+      logger.error('Error refreshing session:', error)
       
       // Handle refresh token errors
       if (isRefreshTokenError(error)) {
@@ -36,7 +37,7 @@ export async function refreshSession() {
     
     return session
   } catch (error) {
-    console.error('Session refresh failed:', error)
+    logger.error('Session refresh failed:', error)
     // If refresh fails, sign out and redirect
     await signOutClient()
     return null
@@ -49,7 +50,7 @@ export async function getCurrentUser() {
     const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error) {
-      console.error('Error getting current user:', error)
+      logger.error('Error getting current user:', error)
       
       // Handle refresh token errors
       if (isRefreshTokenError(error)) {
@@ -63,7 +64,7 @@ export async function getCurrentUser() {
     
     return user
   } catch (error) {
-    console.error('Get current user failed:', error)
+    logger.error('Get current user failed:', error)
     return null
   }
 }
@@ -76,6 +77,6 @@ export function handleAuthError(error: any): void {
     signOutClient()
   } else {
     // For other auth errors, just log them
-    console.error('Auth error:', error)
+    logger.error('Auth error:', error)
   }
 } 

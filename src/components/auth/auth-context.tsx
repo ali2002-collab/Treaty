@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase-browser'
 import { refreshSession, getCurrentUser } from '@/lib/auth-client'
+import { logger } from '@/lib/logger'
 
 interface AuthContextType {
   user: User | null
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null)
       }
     } catch (error) {
-      console.error('Error refreshing auth:', error)
+      logger.error('Error refreshing auth:', error)
       setSession(null)
       setUser(null)
     } finally {
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(session.user)
         }
       } catch (error) {
-        console.error('Error getting initial session:', error)
+        logger.error('Error getting initial session:', error)
       } finally {
         setLoading(false)
       }
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state change:', event, session?.user?.id)
+        logger.auth(event, session?.user?.id)
         
         if (event === 'SIGNED_IN' && session) {
           setSession(session)
@@ -92,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await refreshAuth()
           }
         } catch (error) {
-          console.error('Periodic auth check failed:', error)
+          logger.error('Periodic auth check failed:', error)
           await refreshAuth()
         }
       }

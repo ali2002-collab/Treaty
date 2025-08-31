@@ -4,6 +4,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from './supabase-server'
 import { isRefreshTokenError } from './auth-utils'
+import { logger } from './logger'
 
 export type Session = {
   user: {
@@ -18,7 +19,7 @@ export async function getSessionServer(): Promise<Session | null> {
     const { data: { session }, error } = await supabase.auth.getSession()
     
     if (error) {
-      console.error('Error getting session:', error)
+      logger.error('Error getting session:', error)
       
       // Handle specific refresh token errors
       if (isRefreshTokenError(error)) {
@@ -26,7 +27,7 @@ export async function getSessionServer(): Promise<Session | null> {
         try {
           await supabase.auth.signOut()
         } catch (signOutError) {
-          console.error('Error signing out after token error:', signOutError)
+          logger.error('Error signing out after token error:', signOutError)
         }
         return null
       }
@@ -43,7 +44,7 @@ export async function getSessionServer(): Promise<Session | null> {
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
       if (userError || !user) {
-        console.error('Error getting user:', userError)
+        logger.error('Error getting user:', userError)
         return null
       }
       
@@ -54,11 +55,11 @@ export async function getSessionServer(): Promise<Session | null> {
         }
       }
     } catch (userError) {
-      console.error('Error verifying user:', userError)
+      logger.error('Error verifying user:', userError)
       return null
     }
   } catch (error) {
-    console.error('Error getting session:', error)
+    logger.error('Error getting session:', error)
     return null
   }
 }

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { logger } from '@/lib/logger'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -33,7 +34,7 @@ export async function middleware(request: NextRequest) {
     
     // If there's an auth error, clear the session and redirect to signin
     if (error) {
-      console.error('Middleware auth error:', error)
+      logger.error('Middleware auth error:', error)
       
       // Clear any invalid cookies and redirect
       const response = NextResponse.redirect(new URL('/signin', request.url))
@@ -55,7 +56,7 @@ export async function middleware(request: NextRequest) {
         const { data: { user }, error: refreshError } = await supabase.auth.getUser()
         
         if (refreshError) {
-          console.error('Token refresh error:', refreshError)
+          logger.error('Token refresh error:', refreshError)
           // If refresh fails, clear session and redirect to signin
           const response = NextResponse.redirect(new URL('/signin', request.url))
           response.cookies.delete('sb-access-token')
@@ -63,7 +64,7 @@ export async function middleware(request: NextRequest) {
           return response
         }
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError)
+        logger.error('Token refresh failed:', refreshError)
         // If refresh fails, clear session and redirect to signin
         const response = NextResponse.redirect(new URL('/signin', request.url))
         response.cookies.delete('sb-access-token')
@@ -74,7 +75,7 @@ export async function middleware(request: NextRequest) {
 
     return supabaseResponse
   } catch (error) {
-    console.error('Middleware error:', error)
+    logger.error('Middleware error:', error)
     
     // If there's any error, redirect to signin and clear cookies
     const response = NextResponse.redirect(new URL('/signin', request.url))

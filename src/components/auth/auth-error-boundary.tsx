@@ -4,6 +4,7 @@ import { Component, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { signOutClient } from '@/lib/auth-client'
+import { logger } from '@/lib/logger'
 
 interface Props {
   children: ReactNode
@@ -25,7 +26,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    console.error('Auth error boundary caught an error:', error, errorInfo)
+    logger.error('Auth error boundary caught an error:', error, errorInfo)
     
     // Check if this is an auth-related error
     if (error.message?.includes('Invalid Refresh Token') || 
