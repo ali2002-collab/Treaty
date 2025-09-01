@@ -13,7 +13,6 @@
 - [Authentication](#authentication)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-=======
 
 ## 🚀 Overview
 
@@ -99,7 +98,7 @@ Treaty is a modern, AI-powered contract analysis platform that helps legal profe
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/treaty.git
+   git clone https://github.com/ali2002-collab/treaty.git
    cd treaty
    ```
 
