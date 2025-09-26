@@ -1,14 +1,15 @@
 "use server"
 
 import { createClient } from '@/lib/supabase-server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenAI } from '@google/genai'
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
+const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+const genAI = new GoogleGenAI({ apiKey: apiKey || '' })
 
 export async function chatWithAI(contractId: string, userQuestion: string, chatHistory: Array<{role: string, content: string}>) {
   try {
     // Check if Google API key is configured
-    if (!process.env.GOOGLE_API_KEY) {
+    if (!apiKey) {
       throw new Error('Google AI API key not configured')
     }
 
@@ -86,11 +87,13 @@ INSTRUCTIONS:
 
 Please provide a comprehensive, helpful response based on the contract content and analysis.`
 
-    // Generate AI response
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
-    const result = await model.generateContent(prompt)
-    const response = await result.response
-    const aiResponse = response.text()
+    // Generate AI response (Gemini API v1)
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+    const result = await genAI.models.generateContent({
+      model: modelName,
+      contents: prompt
+    })
+    const aiResponse = result.text
 
     return {
       success: true,
