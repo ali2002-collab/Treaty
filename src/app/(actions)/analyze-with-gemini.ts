@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from '@/lib/supabase-server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenAI } from '@google/genai'
 import { analysisJsonSchema, zAnalysis } from '@/lib/analysis-schema'
 
 export async function analyzeWithGemini(contractId: string) {
@@ -52,22 +52,16 @@ export async function analyzeWithGemini(contractId: string) {
       throw new Error('Analysis already exists for this contract')
     }
 
-    // Initialize Google Generative AI
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
+    // Initialize Google GenAI
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+    const genAI = new GoogleGenAI({ apiKey: apiKey || '' })
     
-    if (!process.env.GOOGLE_API_KEY) {
+    if (!apiKey) {
       throw new Error('Google API key not configured')
     }
 
-    // Get generative model with JSON response configuration
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
-        temperature: 0.2,
-        responseMimeType: "application/json",
-        responseSchema: analysisJsonSchema
-      }
-    })
+    // Generate with JSON response configuration
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
 
     // Create the prompt for contract analysis
     const prompt = `You are an expert contract analyst. Analyze the provided text and determine if it's a valid contract document.
@@ -197,10 +191,20 @@ ${extraction.text}
 
 Analyze this contract and return the JSON response.`
 
-    // Generate content with the prompt
-    const result = await model.generateContent(prompt)
-    const response = await result.response
-    const text = response.text()
+    // Generate content with the prompt using v1 API
+    const result = await genAI.models.generateContent({
+      model: modelName,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        temperature: 0.2,
+        responseSchema: analysisJsonSchema as unknown as object
+      }
+    })
+    const text = result.text
+    if (!text) {
+      throw new Error('Empty response from Gemini')
+    }
     
     console.log('Gemini response:', text)
 
