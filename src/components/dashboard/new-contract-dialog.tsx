@@ -6,23 +6,23 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Upload, X, Loader2, Brain } from "lucide-react"
+import { Plus, Upload, X, Loader2, Brain, Users } from "lucide-react"
 import { uploadAndProcessContract } from "@/app/(actions)/upload-and-process-contract"
-import { analyzeWithGemini } from "@/app/(actions)/analyze-with-gemini"
+import { performLightAnalysis } from "@/app/(actions)/light-analysis"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface NewContractDialogProps {
   onContractAdded: () => void
 }
 
 export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [workflowStep, setWorkflowStep] = useState<'upload' | 'detecting' | 'confirm' | 'analyzing' | 'success'>('upload')
-  const [detectedType, setDetectedType] = useState<string>('')
+  const [workflowStep, setWorkflowStep] = useState<'upload' | 'analyzing' | 'success'>('upload')
   const [contractId, setContractId] = useState<string>('')
-  const [analysisResult, setAnalysisResult] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,30 +76,48 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
     if (!selectedFile) return
 
     setIsSubmitting(true)
-    setWorkflowStep('detecting')
+    setWorkflowStep('analyzing')
     
     try {
-      // Create FormData for the server action
+      // Step 1: Upload contract
       const formData = new FormData()
       formData.append('file', selectedFile)
       
-      const result = await uploadAndProcessContract(formData)
+      const uploadResult = await uploadAndProcessContract(formData)
       
-      if (result.success) {
-        // Now detect contract type with AI
-        if (result.contractId) {
-          setContractId(result.contractId)
-        }
-        
-        // For now, we'll use a simple heuristic to detect type
-        // In a real implementation, you'd call the AI here
-        const detectedType = detectContractType(selectedFile.name)
-        setDetectedType(detectedType)
-        setWorkflowStep('confirm')
-      } else {
-        toast.error(result.error || "Failed to process contract")
+      if (!uploadResult.success) {
+        toast.error(uploadResult.error || "Failed to process contract")
         setWorkflowStep('upload')
+        return
       }
+
+      if (!uploadResult.contractId) {
+        toast.error("Failed to get contract ID")
+        setWorkflowStep('upload')
+        return
+      }
+
+      setContractId(uploadResult.contractId)
+
+      // Step 2: Perform light analysis (detect type + parties)
+      const lightAnalysisResult = await performLightAnalysis(uploadResult.contractId)
+      
+      if (!lightAnalysisResult.success) {
+        toast.error(lightAnalysisResult.error || "Failed to analyze contract")
+        setWorkflowStep('upload')
+        return
+      }
+
+      // Success - redirect to results page
+      setWorkflowStep('success')
+      toast.success("Contract uploaded and analyzed!")
+      
+      // Close dialog and redirect to results page
+      onContractAdded()
+      resetForm()
+      setOpen(false)
+      router.push(`/results/${uploadResult.contractId}`)
+      
     } catch (error) {
       console.error('Upload error:', error)
       toast.error("An unexpected error occurred")
@@ -109,7 +127,8 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
     }
   }
 
-  const detectContractType = (filename: string): string => {
+  // Removed - now using AI detection
+  const _detectContractTypeLegacy = (filename: string): string => {
     const lowerFilename = filename.toLowerCase()
     
     // Employment & HR
@@ -277,32 +296,6 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
     return 'Other'
   }
 
-  const handleAnalyze = async () => {
-    if (!contractId) return
-    
-    setWorkflowStep('analyzing')
-    
-    try {
-      const result = await analyzeWithGemini(contractId)
-      
-      if (result.success) {
-        setAnalysisResult(result)
-        setWorkflowStep('success')
-      } else {
-        toast.error(result.error || "Analysis failed")
-        setWorkflowStep('confirm')
-      }
-    } catch (error) {
-      console.error('Analysis error:', error)
-      toast.error("An unexpected error occurred during analysis")
-      setWorkflowStep('confirm')
-    }
-  }
-
-  const handleViewResults = () => {
-    // Navigate to results page
-    window.location.href = `/results/${contractId}`
-  }
 
   const handleClose = () => {
     onContractAdded() // Refresh the dashboard
@@ -314,9 +307,7 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
   const resetForm = () => {
     setSelectedFile(null)
     setWorkflowStep('upload')
-    setDetectedType('')
     setContractId('')
-    setAnalysisResult(null)
   }
 
 
@@ -406,65 +397,20 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
           </>
         )}
 
-        {workflowStep === 'detecting' && (
-          <>
-            <DialogHeader>
-              <DialogTitle>Detecting Contract Type</DialogTitle>
-              <DialogDescription>
-                Our AI is analyzing your contract to determine its type...
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 text-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-              <p className="text-sm text-muted-foreground">
-                Analyzing contract content...
-              </p>
-            </div>
-          </>
-        )}
-
-        {workflowStep === 'confirm' && (
-          <>
-            <DialogHeader>
-              <DialogTitle>Contract Type Detected</DialogTitle>
-              <DialogDescription>
-                We have detected that your contract is a <strong>{detectedType}</strong>. Would you like to analyze it with our AI?
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 text-center py-4">
-              <div className="text-6xl mb-4">📄</div>
-              <p className="text-lg font-medium">
-                Contract Type: <span className="text-primary">{detectedType}</span>
-              </p>
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={resetForm}>
-                No, Try Again
-              </Button>
-              <Button onClick={handleAnalyze}>
-                Yes, Analyze
-              </Button>
-            </DialogFooter>
-          </>
-        )}
-
         {workflowStep === 'analyzing' && (
           <>
             <DialogHeader>
-              <DialogTitle>Analyzing Contract</DialogTitle>
+              <DialogTitle>Uploading & Analyzing Contract</DialogTitle>
               <DialogDescription>
-                Our AI is performing a comprehensive analysis of your contract...
+                Uploading your contract and performing light analysis...
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 text-center py-8">
-              <Brain className="h-8 w-8 mx-auto text-primary" />
+              <Brain className="h-8 w-8 mx-auto text-violet-500" />
               <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
               <p className="text-sm text-muted-foreground">
-                Analyzing risks, opportunities, and key clauses...
+                Detecting contract type and parties...
               </p>
             </div>
           </>
@@ -473,37 +419,18 @@ export function NewContractDialog({ onContractAdded }: NewContractDialogProps) {
         {workflowStep === 'success' && (
           <>
             <DialogHeader>
-              <DialogTitle>Success!</DialogTitle>
+              <DialogTitle>Upload Complete!</DialogTitle>
               <DialogDescription>
-                Your contract has been analyzed successfully by our AI. You can now view the results.
+                Your contract has been uploaded and analyzed. Redirecting to results page...
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 text-center py-4">
               <div className="text-6xl mb-4">✅</div>
               <p className="text-lg font-medium text-green-600">
-                Analysis Complete!
+                Contract Ready!
               </p>
-              {analysisResult && (
-                <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg">
-                  <p className="text-sm text-green-800 dark:text-green-200">
-                    Score: {analysisResult.score}/100
-                  </p>
-                  <p className="text-sm text-green-700 dark:text-green-700">
-                    Type: {analysisResult.detected_type}
-                  </p>
-                </div>
-              )}
             </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>
-                Close
-              </Button>
-              <Button onClick={handleViewResults}>
-                View AI Analysis Results
-              </Button>
-            </DialogFooter>
           </>
         )}
       </DialogContent>

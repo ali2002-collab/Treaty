@@ -5,7 +5,7 @@ import { ArrowLeft, FileText, Calendar, User, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase-server"
 import { notFound } from "next/navigation"
-import { RunAnalysisClient } from "@/components/results/run-analysis-client"
+import { PreAnalysisView } from "@/components/results/pre-analysis-view"
 import { ScoreDonut } from "@/components/results/score-donut"
 import { AnalysisTabs } from "@/components/results/analysis-tabs"
 import { AIChatButton } from "@/components/results/ai-chat-button"
@@ -113,6 +113,15 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   const extractionData: ExtractionData = extraction
   const analysisData: AnalysisData | null = analysis
 
+  // Get parties from analysis if it exists, or prepare for detection
+  let detectedParties: Array<{ name: string; role: string; description: string }> = []
+  if (analysis?.parties && typeof analysis.parties === 'object' && 'parties' in analysis.parties) {
+    const partiesData = analysis.parties as any
+    if (Array.isArray(partiesData.parties)) {
+      detectedParties = partiesData.parties
+    }
+  }
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
@@ -134,7 +143,8 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   }
 
   // Transform analysis data to match the Analysis type
-  const transformedAnalysis: Analysis | null = analysisData ? {
+  // Only create transformedAnalysis if we have a complete analysis (with score)
+  const transformedAnalysis: Analysis | null = analysisData && analysisData.score !== null ? {
     detected_type: analysisData.detected_type, // Use original type
     clauses: analysisData.clauses,
     risks: analysisData.risks,
@@ -238,7 +248,11 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
             </div>
           ) : (
             <div className="mb-8 sm:mb-12">
-              <RunAnalysisClient contractId={id} />
+              <PreAnalysisView 
+                contractId={id}
+                detectedType={contractData.detected_type}
+                initialParties={detectedParties}
+              />
             </div>
           )}
           

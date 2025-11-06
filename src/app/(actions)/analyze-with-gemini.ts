@@ -44,13 +44,17 @@ export async function analyzeWithGemini(contractId: string) {
     // Check if analysis already exists
     const { data: existingAnalysis } = await supabase
       .from('analyses')
-      .select('id')
+      .select('id, score')
       .eq('contract_id', contractId)
       .limit(1)
 
-    if (existingAnalysis && existingAnalysis.length > 0) {
+    // If analysis exists with a score, it's a complete analysis - don't overwrite
+    if (existingAnalysis && existingAnalysis.length > 0 && existingAnalysis[0].score !== null) {
       throw new Error('Analysis already exists for this contract')
     }
+    
+    // If analysis exists but score is null (from light analysis), we'll update it
+    const analysisId = existingAnalysis && existingAnalysis.length > 0 ? existingAnalysis[0].id : null
 
     // Initialize Google GenAI
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY
@@ -62,6 +66,25 @@ export async function analyzeWithGemini(contractId: string) {
 
     // Generate with JSON response configuration
     const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+
+    // Get user's selected party for personalized analysis
+    const { data: contractWithParty } = await supabase
+      .from('contracts')
+      .select('user_selected_party')
+      .eq('id', contractId)
+      .single()
+
+    // Build party-specific context for the prompt
+    let partyContext = ''
+    if (contractWithParty?.user_selected_party) {
+      partyContext = `\n\nIMPORTANT: The user represents the party "${contractWithParty.user_selected_party}" in this contract. 
+Please provide analysis, risks, opportunities, and recommendations from the perspective of this party.
+- Focus on how the contract terms affect "${contractWithParty.user_selected_party}" specifically.
+- Risks should be risks TO "${contractWithParty.user_selected_party}".
+- Opportunities should be opportunities FOR "${contractWithParty.user_selected_party}".
+- Negotiation points should be suggestions for "${contractWithParty.user_selected_party}" to improve the contract.
+- The risk score should reflect how favorable the contract is FOR "${contractWithParty.user_selected_party}".`
+    }
 
     // Create the prompt for contract analysis
     const prompt = `You are an expert contract analyst. Analyze the provided text and determine if it's a valid contract document.
@@ -188,6 +211,7 @@ CRITICAL FORMAT REQUIREMENTS:
 
 CONTRACT TEXT TO ANALYZE:
 ${extraction.text}
+${partyContext}
 
 Analyze this contract and return the JSON response.`
 
@@ -248,26 +272,85 @@ Analyze this contract and return the JSON response.`
     const summary = validatedData.summary || `Contract analysis completed with a score of ${validatedData.score}/100.`
     const recommendations = validatedData.recommendations || `Based on the score of ${validatedData.score}/100, ${favorable ? 'this contract appears favorable' : 'review the identified risks and opportunities'}.`
 
-    // Insert analysis into database
-    const { data: analysis, error: insertError } = await supabase
-      .from('analyses')
-      .insert({
-        contract_id: contractId,
-        score: validatedData.score,
-        favorable: favorable,
-        clauses: validatedData.clauses,
-        risks: validatedData.risks,
-        opportunities: validatedData.opportunities,
-        summary: summary,
-        recommendations: recommendations,
-        negotiation_points: validatedData.negotiation_points
-      })
-      .select('id')
-      .single()
+    // contractWithParty is already declared above for the prompt, reuse it here
 
-    if (insertError) {
-      console.error('Database insert error:', insertError)
-      throw new Error('Failed to save analysis to database')
+    // Get parties from existing analysis if available (from light analysis)
+    // Otherwise, parties will be included in the full analysis response
+    let partiesData: any = null
+    
+    if (analysisId) {
+      // Get existing parties from the partial analysis
+      const { data: existingAnalysisData } = await supabase
+        .from('analyses')
+        .select('parties')
+        .eq('id', analysisId)
+        .single()
+
+      if (existingAnalysisData?.parties) {
+        partiesData = existingAnalysisData.parties
+      }
+    }
+
+    // Include user's selected party in parties data
+    if (partiesData && contractWithParty?.user_selected_party) {
+      partiesData.user_party = contractWithParty.user_selected_party
+    } else if (contractWithParty?.user_selected_party) {
+      // If we have a selected party but no parties data, create minimal structure
+      partiesData = {
+        user_party: contractWithParty.user_selected_party
+      }
+    }
+
+    // Insert or update analysis in database
+    let analysis
+    if (analysisId) {
+      // Update existing partial analysis (from light analysis)
+      const { data: updatedAnalysis, error: updateError } = await supabase
+        .from('analyses')
+        .update({
+          score: validatedData.score,
+          favorable: favorable,
+          clauses: validatedData.clauses,
+          risks: validatedData.risks,
+          opportunities: validatedData.opportunities,
+          summary: summary,
+          recommendations: recommendations,
+          negotiation_points: validatedData.negotiation_points,
+          parties: partiesData ? { ...partiesData, user_party: contractWithParty?.user_selected_party || null } : null
+        })
+        .eq('id', analysisId)
+        .select('id')
+        .single()
+
+      if (updateError) {
+        console.error('Database update error:', updateError)
+        throw new Error('Failed to update analysis in database')
+      }
+      analysis = updatedAnalysis
+    } else {
+      // Insert new analysis
+      const { data: newAnalysis, error: insertError } = await supabase
+        .from('analyses')
+        .insert({
+          contract_id: contractId,
+          score: validatedData.score,
+          favorable: favorable,
+          clauses: validatedData.clauses,
+          risks: validatedData.risks,
+          opportunities: validatedData.opportunities,
+          summary: summary,
+          recommendations: recommendations,
+          negotiation_points: validatedData.negotiation_points,
+          parties: partiesData // Include parties data in JSONB field
+        })
+        .select('id')
+        .single()
+
+      if (insertError) {
+        console.error('Database insert error:', insertError)
+        throw new Error('Failed to save analysis to database')
+      }
+      analysis = newAnalysis
     }
 
     // Update contract with detected type if not already set
